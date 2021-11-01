@@ -1,0 +1,10 @@
+#cache files
+__pycache__/
+
+# environment
+
+venv/
+
+#data
+
+data/
