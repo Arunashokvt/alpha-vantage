@@ -1,5 +1,5 @@
 version: "3.9"
-   
+
 services:
   db:
     image: postgres
@@ -11,9 +11,14 @@ services:
       - POSTGRES_PASSWORD=postgres
   api:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
+    command: >
+      sh -c "python manage.py makemigrations &&
+      python manage.py migrate &&
+      python manage.py migrate --run-syncdb  &&
+      python manage.py initadmin &&
+      python manage.py runserver 0.0.0.0:8000"
     ports:
       - "8000:8000"
     depends_on:
@@ -23,15 +28,24 @@ services:
       - .env
   redis:
     image: redis:alpine
+    command: redis-server
   celery:
     restart: always
-    image: celery
-    environment:
-      - DB_HOST=db
-      - DB_NAME=postgres
-      - DB_USER=postgres
-      - DB_PASS=postgres
+    build:
+      context: .
+    command: celery  -A alpha_vantage worker --loglevel=INFO --without-gossip --without-mingle --without-heartbeat -Ofair --pool=solo
+    volumes:
+      - ./data/celery:/celery
+    env_file:
+      - ./.env
     depends_on:
       - db
       - redis
       - api
+  celery-beat:
+    build: .
+    command: celery -A alpha_vantage.celery beat -l info
+    volumes:
+      - ./data/celery:/celery
+    depends_on:
+      - redis
