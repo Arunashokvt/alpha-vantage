@@ -1,4 +1,5 @@
 ##ALPHA VANTAGE
+
 ###Introduction
 This project fetches the latest currency exchange rate from Alpha vantage
 
