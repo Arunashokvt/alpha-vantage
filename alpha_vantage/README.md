@@ -9,7 +9,8 @@ This project fetches the latest currency exchange rate from Alpha vantage
 
 ### Installation
 1. Clone the repo
-2. To run the app, try:
+2. cd into ```alpha-vantage/alpha_vantage/```
+3. To run the app, try:
 ```docker-compose up --build```
 
 ### How to use
